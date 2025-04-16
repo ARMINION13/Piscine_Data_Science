@@ -26,7 +26,7 @@ def create_table_from_csv(csv_dir : str, csv_name : str) :
     cursor.close()
     connect.close()
 
-csv_dir = "/home/rgirondo/subject/customer/"
+csv_dir = "/home/rgirondo/goinfre/subject/customer/"
 
 csv_files = [
     f for f in os.listdir(csv_dir)

@@ -25,4 +25,4 @@ def create_table_from_csv(csv_dir : str, csv_name : str) :
     cursor.close()
     connect.close()
 
-create_table_from_csv("/home/rgirondo/subject/customer/", "data_2022_oct.csv")
+create_table_from_csv("/home/rgirondo/goinfre/subject/customer/", "data_2022_oct.csv")
