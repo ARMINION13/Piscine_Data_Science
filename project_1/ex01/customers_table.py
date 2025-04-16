@@ -3,13 +3,13 @@ from sqlalchemy import create_engine, types
 import os
 
 
-def create_table_from_csv(csv_dir : str, csv_name : str) :
+def create_combined_table(csv_dir : str, csv_name : list) :
 
     csv_fd = []
     connect = psycopg2.connect(host="localhost", dbname="piscineds", user="rgirondo", password="mysecretpassword")
     cursor = connect.cursor()
 
-    cursor.execute(f"""CREATE TABLE {csv_name[0:-4]} (
+    cursor.execute(f"""CREATE TABLE Customers (
                     event_time TIMESTAMP,
                     event_type VARCHAR(200),
                     product_id BIGINT,
@@ -18,9 +18,10 @@ def create_table_from_csv(csv_dir : str, csv_name : str) :
                     user_session TEXT
                     );""")
 
-    with open(csv_dir + csv_name, "r") as f:
-        next(f)
-        cursor.copy_from(f, csv_name[0:-4], sep=",", columns=("event_time", "event_type", "product_id", "price", "user_id", "user_session"))
+    for name in csv_name:
+        with open(csv_dir + name, "r") as f:
+            next(f)
+            cursor.copy_from(f, "customers", sep=",", columns=("event_time", "event_type", "product_id", "price", "user_id", "user_session"))
 
     connect.commit()
     cursor.close()
@@ -33,5 +34,4 @@ csv_files = [
     if os.path.isfile(os.path.join(csv_dir, f))
 ]
 
-for file in csv_files:
-    create_table_from_csv(csv_dir, file)
+create_combined_table(csv_dir, csv_files)

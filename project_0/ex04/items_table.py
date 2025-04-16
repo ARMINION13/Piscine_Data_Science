@@ -1,20 +1,28 @@
-import pandas as pd
+import psycopg2
 from sqlalchemy import create_engine, types
 import os
 
 
 def create_table_from_csv(csv_dir : str, csv_name : str) :
 
-    csv_fd = pd.read_csv(csv_dir + csv_name, nrows=100)
+    csv_fd = []
+    connect = psycopg2.connect(host="localhost", dbname="piscineds", user="rgirondo", password="mysecretpassword")
+    cursor = connect.cursor()
 
-    dtype_mapping = ({
-        'category_code': types.VARCHAR(200),
-        'product_id' : types.INTEGER()
-    })
+    cursor.execute(f"""CREATE TABLE {csv_name[0:-4]} (
+                    product_id INTEGER,
+                    category_id BIGINT,
+                    category_code VARCHAR(200),
+                    brand TEXT
+                    );""")
 
-    engine = create_engine('postgresql://rgirondo:mysecretpassword@localhost:5432/piscineds')
+    with open(csv_dir + csv_name, "r") as f:
+        next(f)
+        cursor.copy_from(f, csv_name[0:-4], sep=",", null="")
 
-    csv_fd.to_sql(csv_name[0:-4], engine, if_exists='replace', dtype = dtype_mapping)
+    connect.commit()
+    cursor.close()
+    connect.close()
 
 csv_dir = "/home/rgirondo/subject/item/"
 

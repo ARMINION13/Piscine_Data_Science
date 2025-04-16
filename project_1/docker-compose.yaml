@@ -1,0 +1,31 @@
+services:
+  db:
+    container_name: db
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: "rgirondo"
+      POSTGRES_PASSWORD: "mysecretpassword"
+      POSTGRES_DB: "piscineds"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    container_name: db_visualizer
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: rgirondo@admin.com
+      PGADMIN_DEFAULT_PASSWORD: mysecretpassword
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
+  pgadmin_data:
