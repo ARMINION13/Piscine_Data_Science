@@ -38,7 +38,7 @@ cursor.execute("""
 connect.commit()
 
 cursor.execute("""
-                ALTER TABLE Customers;
+                ALTER TABLE Customers
                 DROP COLUMN previous_time
                 """)
 
