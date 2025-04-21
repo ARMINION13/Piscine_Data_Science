@@ -27,8 +27,6 @@ def make_box_plot2(data : list) :
     box_plot.boxplot(axisX, vert=False, boxprops=dict(facecolor="lightblue"), patch_artist=True)
     box_plot.grid(True, axis='x')
 
-    plt.tight_layout()
-
 def get_box1_data() -> list :
 
     data : list = []
@@ -72,7 +70,7 @@ print(f"{'min':<8} {np.min(print_data):>15.6f}")
 print(f"{'25%':<8} {np.percentile(print_data, 25):>15.6f}")
 print(f"{'50%':<8} {np.percentile(print_data, 50):>15.6f}")
 print(f"{'75%':<8} {np.percentile(print_data, 75):>15.6f}")
-print(f"{'max':<8} {np.min(print_data):>15.6f}")
+print(f"{'max':<8} {np.max(print_data):>15.6f}")
 
 #Box plot del precio de los objetos comprados
 make_box_plot1(box_data)
@@ -81,6 +79,7 @@ make_box_plot1(box_data)
 box_data = get_box2_data()
 make_box_plot2(box_data)
 
+plt.tight_layout()
 plt.show()
 cursor.close()
 connect.close()

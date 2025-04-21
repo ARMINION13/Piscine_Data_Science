@@ -13,16 +13,13 @@ def make_line_chart(data : list) :
         axisX.append(i[0])
         axisY.append(i[1])
     
-    line_chart = plt.subplot() 
+    fig, line_chart = plt.subplots() 
     line_chart.plot(axisX, axisY)
     line_chart.xaxis.set_major_locator(mdates.MonthLocator())
     line_chart.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
     line_chart.margins(x=0)
     line_chart.grid(True)
-
-    plt.tight_layout()
-    plt.ylabel('Number of customers')
-    plt.show()
+    line_chart.set_ylabel('Number of customers')
 
 def make_bar_chart(data : list) :
 
@@ -34,17 +31,15 @@ def make_bar_chart(data : list) :
         axisX.append(i[0])
         axisY.append(i[1])
     
-    bar_chart = plt.subplot() 
+    fig, bar_chart = plt.subplots()
     bar_chart.bar(axisX, axisY, width=25)
     bar_chart.xaxis.set_major_locator(mdates.MonthLocator())
     bar_chart.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
     bar_chart.set_axisbelow(True)
     bar_chart.grid(True, axis='y')
+    bar_chart.set_ylabel('total sales in million of ₳')
+    bar_chart.set_xlabel('month')
 
-    plt.tight_layout()
-    plt.ylabel('total sales in million of ₳')
-    plt.xlabel('month')
-    plt.show()
 
 def make_stack_chart(data : list) :
 
@@ -56,17 +51,14 @@ def make_stack_chart(data : list) :
         axisX.append(i[0])
         axisY.append(i[1])
     
-    stack_chart = plt.subplot() 
+    fig, stack_chart = plt.subplots() 
     stack_chart.stackplot(axisX, axisY)
     stack_chart.xaxis.set_major_locator(mdates.MonthLocator())
     stack_chart.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
     stack_chart.set_axisbelow(True)
     stack_chart.margins(x=0)
     stack_chart.grid(True)
-
-    plt.tight_layout()
-    plt.ylabel('average spend/customers in ₳')
-    plt.show()
+    stack_chart.set_ylabel('average spend/customers in ₳')
 
 def get_chart1_data() -> list :
 
@@ -128,5 +120,7 @@ make_bar_chart(chart_data)
 chart_data = get_chart3_data()
 make_stack_chart(chart_data)
 
+plt.tight_layout()
+plt.show()
 cursor.close()
 connect.close()
