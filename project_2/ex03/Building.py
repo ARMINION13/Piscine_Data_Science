@@ -15,9 +15,12 @@ def make_bar_chart2(data : list) :
         axisY.append(i[1])
     
     fig, bar_chart = plt.subplots()
-    bar_chart.bar(axisX, axisY, width=24.5)
+    bar_chart.bar(axisX, axisY, width=44.5)
     bar_chart.xaxis.set_major_locator(MultipleLocator(50))
-    bar_chart.set_xlim(-50, 400)
+    bar_chart.yaxis.set_major_locator(MultipleLocator(5000))
+    bar_chart.set_xlim(-25, 300)
+    bar_chart.set_ylim(0, 50000)
+    bar_chart.margins(x=15)
     bar_chart.set_axisbelow(True)
     bar_chart.grid(True)
     bar_chart.set_ylabel('customers')
@@ -36,10 +39,10 @@ def make_bar_chart1(data : list) :
         axisY.append(i[1])
     
     fig, bar_chart = plt.subplots()
-    bar_chart.bar(axisX, axisY, align='edge', width=9.5)
+    bar_chart.bar(axisX, axisY, align='edge', width=9)
     bar_chart.xaxis.set_major_locator(MultipleLocator(10))
-    bar_chart.set_xlim(0, 100)
-    bar_chart.margins(x=3)
+    bar_chart.set_xlim(-2, 50)
+    bar_chart.margins(x=5)
     bar_chart.set_axisbelow(True)
     bar_chart.grid(True)
     bar_chart.set_ylabel('customers')
@@ -56,11 +59,11 @@ def get_chart2_data() -> list :
                         SELECT 
                             user_id,
                             CASE
-                                WHEN SUM(price)::float < 25 THEN 0::float
-                                WHEN SUM(price)::float > 25 AND SUM(price)::float < 75 THEN 50::float
-                                WHEN SUM(price)::float > 75 AND SUM(price)::float < 125 THEN 100::float
-                                WHEN SUM(price)::float > 125 AND SUM(price)::float < 175 THEN 150::float
-                                WHEN SUM(price)::float > 175 AND SUM(price)::float < 225 THEN 200::float
+                                WHEN SUM(price)::float < 25 THEN 0::numeric
+                                WHEN SUM(price)::float < 75 THEN 50::numeric
+                                WHEN SUM(price)::float < 125 THEN 100::numeric
+                                WHEN SUM(price)::float < 175 THEN 150::numeric
+                                WHEN SUM(price)::float < 225 THEN 200::numeric
                             END AS gastos
                         FROM customers
                         WHERE event_type='purchase'
