@@ -3,8 +3,6 @@ import psycopg2 as psy
 import numpy as np
 from matplotlib.ticker import MultipleLocator
 from sklearn.cluster import KMeans
-from sklearn import metrics
-from scipy.spatial.distance import cdist
 
 def get_chart_data() -> list :
 
@@ -35,38 +33,45 @@ def apply_elbow_method( data : list ) -> list :
     axisY = []
 
     for i in data:
-        axisX.append(i[0])
-        axisY.append(i[1])
+        axisX.append(i[1])
+        axisY.append(i[0])
     
     arrayX = np.array(axisX)
     arrayY = np.array(axisY)
     arrayXY = np.array(list(zip(arrayX, arrayY))).reshape(len(arrayX), 2)
-    distortions = []
-    inertias = []
-    K = range(1, 11)
 
-    for k in K:
-        kmean_model = KMeans(n_clusters=k, random_state=42).fit(arrayXY)
-        distortions.append(sum(np.min(cdist(arrayXY, kmean_model.cluster_centers_, 'euclidean'), axis=1)**2) / arrayXY.shape[0])
-        inertias.append(kmean_model.inertia_)
+    kmean_model = KMeans(n_clusters=3, init='k-means++', random_state=9)
+    label = kmean_model.fit_predict(arrayXY)
 
-    return K, distortions, inertias
+    return arrayXY, kmean_model, label
 
-def make_elbow_chart( K : list, data : list):
+def make_scatter_chart( data, model, label):
 
-    fig, elbow_chart = plt.subplots()
-    elbow_chart.plot(K, data)
-    elbow_chart.xaxis.set_major_locator(MultipleLocator(2))
-    elbow_chart.set_xlabel('Number of clusters')
-    elbow_chart.set_title('The Elbow Method')
-    elbow_chart.grid(True)
+    fig, scatter_chart = plt.subplots()
+    scatter_chart.scatter(data[:, 0], data[:, 1], c=label,
+    cmap='viridis', edgecolor='none', s=30)
+    scatter_chart.scatter(model.cluster_centers_[:, 0], model.cluster_centers_[:, 1],
+    s=300, c='red', cmap='viridis', label='Centroids', edgecolor='none')
+    scatter_chart.set_xlabel('Recency')
+    scatter_chart.set_ylabel('Frequency')
+    scatter_chart.set_title('Clusters of customers')
+
+def make_bar_chart( data, model):
+
+    unique, counts = np.unique(model.labels_, return_counts=True)
+    fig, bar_chart = plt.subplots(figsize=(10, 5))
+    bar_chart.barh(['new customers', 'loyal customers', 'inactive'], counts, color=['lightblue', 'moccasin', 'lightgreen'])
+    bar_chart.set_axisbelow(True)
+    bar_chart.grid(True)
+    bar_chart.set_xlabel('number of customers')
 
 connect = psy.connect(host="localhost", dbname="piscineds", user="rgirondo", password="mysecretpassword")
 cursor = connect.cursor()
 
 chart_data = get_chart_data()
-K, distortions, inertias = apply_elbow_method(chart_data)
-make_elbow_chart(K, distortions)
+data, kmean_model, label = apply_elbow_method(chart_data)
+make_scatter_chart(data, kmean_model, label)
+make_bar_chart(data, kmean_model)
 
 plt.show()
 cursor.close()
