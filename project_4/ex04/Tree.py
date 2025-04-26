@@ -100,6 +100,13 @@ tree_model = train_tree( data_train )
 truth = data_val['knight'].tolist()
 predict = predict_tree( tree_model, data_val )
 
+with open('../Tree.txt', 'w') as f:
+    for item in predict:
+        if item == 0:
+            f.write(f"Jedi\n")
+        if item == 1:
+            f.write(f"Sith\n")
+
 matrix = get_matrix( truth, predict )
 print_matrix ( matrix )
 confusion_matrix_chart( matrix )

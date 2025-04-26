@@ -15,7 +15,7 @@ data_test = get_dataframe('../Test_knight.csv')
 
 split_percentage = len(data_test.index) / len(data_train.index)
 
-data_valid = data_train.sample(frac = split_percentage)
+data_valid = data_train.sample(frac = 0.20)
 new_data_train = data_train.drop(data_valid.index)
 
 data_valid.to_csv('../Validation_knight.csv')
