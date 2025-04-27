@@ -21,7 +21,7 @@ def train_KNN( df_train ):
 
 def predict_KNN(model, df_test):
 
-    predictions_binary = model.predict(df_test[df_test.columns[:-1]])
+    predictions_binary = model.predict(df_test[df_test.columns])
 
     return predictions_binary
 
@@ -43,49 +43,6 @@ def get_matrix( truth : list, predict : list):
 
     return matrix
 
-def print_matrix( matrix : list ):
-
-    #precision
-    p_jedi = round(matrix[0][0] / (matrix[0][0] + matrix[1][0]), 2)
-    p_sith = round(matrix[1][1] / (matrix[1][1] + matrix[0][1]), 2)
-
-    #recall
-    r_jedi = round(matrix[0][0] / (matrix[0][0] + matrix[0][1]), 2)
-    r_sith = round(matrix[1][1] / (matrix[1][1] + matrix[1][0]), 2)
-
-    #F1-Score
-    f1_jedi = round(2 * (p_jedi * r_jedi) / (p_jedi + r_jedi), 2)
-    f1_sith = round(2 * (p_sith * r_sith) / (p_sith + r_sith), 2)
-
-    #total
-    t_jedi = matrix[0][0] + matrix[1][0]
-    t_sith = matrix[1][1] + matrix[0][1]
-
-    #accuracy
-
-    f1_acc = round((f1_jedi + f1_sith) / 2, 2)
-    total_acc =  t_jedi + t_sith
-
-    print("        Precision    Recall    F1-score    Total")
-    print("                                                ")
-    print(f"Jedi   {p_jedi:>10}{r_jedi:>10}{f1_jedi:>12}{t_jedi:>9}")
-    print(f"Sith   {p_sith:>10}{r_sith:>10}{f1_sith:>12}{t_sith:>9}")
-    print("                                                ")
-    print(f"accuracy                       {f1_acc:>8}{total_acc:>9}")
-    print("                                                ")
-    print(matrix[0])
-    print(matrix[1])
-
-
-
-def confusion_matrix_chart( matrix ):
-
-    fig, matrix_chart = plt.subplots(figsize=(7, 4))
-
-    sns.heatmap(matrix, annot=True, fmt="d", cmap="viridis"
-    , xticklabels=[0, 1], yticklabels=[0, 1])
-
-
 def iterative_accuracy( df_train, df_test ):
 
     #Normalizo los dataframes
@@ -94,7 +51,7 @@ def iterative_accuracy( df_train, df_test ):
     df_test[df_train.columns[:-1]] = scaler.transform(df_test[df_test.columns[:-1]])
 
     #Inicializo las variables
-    truth = data_test['knight'].tolist()
+    truth = data_val['knight'].tolist()
     accuracy = []
     k_values = []
 
@@ -132,17 +89,20 @@ def k_accuracy_chart( accuracy, k_values):
 
 #_________________________MAIN___________________________________#
 
+
+
 data_train = get_dataframe(sys.argv[1])
 data_test = get_dataframe(sys.argv[2])
+data_training = get_dataframe("../Training_knight.csv")
+data_val = get_dataframe("../Validation_knight.csv")
 data_train['knight'] = data_train['knight'].map({'Jedi': 0, 'Sith': 1})
-data_test['knight'] = data_test['knight'].map({'Jedi': 0, 'Sith': 1})
-data_train = data_train.drop(columns=['Unnamed: 0'])
-data_test = data_test.drop(columns=['Unnamed: 0'])
-
+data_training['knight'] = data_training['knight'].map({'Jedi': 0, 'Sith': 1})
+data_val['knight'] = data_val['knight'].map({'Jedi': 0, 'Sith': 1})
+data_training = data_training.drop(columns=['Unnamed: 0'])
+data_val = data_val.drop(columns=['Unnamed: 0'])
 
 KNN_model = train_KNN( data_train )
 
-truth = data_test['knight'].tolist()
 predict = predict_KNN( KNN_model, data_test )
 
 with open('../KNN.txt', 'w') as f:
@@ -152,12 +112,7 @@ with open('../KNN.txt', 'w') as f:
         if item == 1:
             f.write(f"Sith\n")
 
-matrix = get_matrix( truth, predict )
-print_matrix ( matrix )
-confusion_matrix_chart( matrix )
-
-
-accuracy, k_values = iterative_accuracy(data_train, data_test)
+accuracy, k_values = iterative_accuracy(data_training, data_val)
 k_accuracy_chart(accuracy, k_values)
 
 plt.tight_layout()

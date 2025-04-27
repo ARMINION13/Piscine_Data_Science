@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import sys
 from matplotlib.colors import ListedColormap
 from matplotlib.ticker import MultipleLocator
 
@@ -53,8 +54,8 @@ def print_matrix( matrix : list ):
     f1_sith = round(2 * (p_sith * r_sith) / (p_sith + r_sith), 2)
 
     #total
-    t_jedi = matrix[0][0] + matrix[1][0]
-    t_sith = matrix[1][1] + matrix[0][1]
+    t_jedi = matrix[0][0] + matrix[0][1]
+    t_sith = matrix[1][1] + matrix[1][0]
 
     #accuracy
 
@@ -80,9 +81,8 @@ def confusion_matrix_chart( matrix ):
     sns.heatmap(matrix, annot=True, fmt="d", cmap="viridis"
     , xticklabels=[0, 1], yticklabels=[0, 1])
 
-
-truth = get_1D_data('../truth.txt')
-predict = get_1D_data('../predictions.txt')
+truth = get_1D_data(sys.argv[1])
+predict = get_1D_data(sys.argv[2])
 
 matrix = get_matrix( truth, predict )
 print_matrix ( matrix )
