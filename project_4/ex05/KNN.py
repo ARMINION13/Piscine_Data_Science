@@ -14,7 +14,7 @@ def get_dataframe( dir : str ):
 
 def train_KNN( df_train ):
 
-    knn = KNeighborsClassifier( n_neighbors=4 )
+    knn = KNeighborsClassifier( n_neighbors=2 )
     knn.fit(df_train[df_train.columns[:-1]], df_train['knight'])
 
     return knn
@@ -24,6 +24,21 @@ def predict_KNN(model, df_test):
     predictions_binary = model.predict(df_test[df_test.columns])
 
     return predictions_binary
+
+def get_1D_data( dir : str):
+
+    binary_data = []
+
+    with open(dir, 'r') as f:
+        data = f.read().split('\n')
+
+    for d in data:
+        if d == 'Jedi':
+            binary_data.append(0)
+        if d == 'Sith':
+            binary_data.append(1)
+
+    return binary_data
 
 def get_matrix( truth : list, predict : list):
 
@@ -45,13 +60,8 @@ def get_matrix( truth : list, predict : list):
 
 def iterative_accuracy( df_train, df_test ):
 
-    #Normalizo los dataframes
-    scaler = StandardScaler()
-    df_train[df_train.columns[:-1]] = scaler.fit_transform(df_train[df_train.columns[:-1]])
-    df_test[df_train.columns[:-1]] = scaler.transform(df_test[df_test.columns[:-1]])
-
     #Inicializo las variables
-    truth = data_val['knight'].tolist()
+    truth = get_1D_data("../Truth_Knight.txt")
     accuracy = []
     k_values = []
 
@@ -62,7 +72,7 @@ def iterative_accuracy( df_train, df_test ):
         knn = KNeighborsClassifier(n_neighbors=k)
         knn.fit(df_train[df_train.columns[:-1]], df_train['knight'])
 
-        predictions_binary = knn.predict(df_test[df_test.columns[:-1]])
+        predictions_binary = knn.predict(df_test[df_test.columns])
         matrix = get_matrix( truth, predictions_binary )
         #precision
         p_jedi = round(matrix[0][0] / (matrix[0][0] + matrix[1][0]), 2)
@@ -93,13 +103,12 @@ def k_accuracy_chart( accuracy, k_values):
 
 data_train = get_dataframe(sys.argv[1])
 data_test = get_dataframe(sys.argv[2])
-data_training = get_dataframe("../Training_knight.csv")
-data_val = get_dataframe("../Validation_knight.csv")
 data_train['knight'] = data_train['knight'].map({'Jedi': 0, 'Sith': 1})
-data_training['knight'] = data_training['knight'].map({'Jedi': 0, 'Sith': 1})
-data_val['knight'] = data_val['knight'].map({'Jedi': 0, 'Sith': 1})
-data_training = data_training.drop(columns=['Unnamed: 0'])
-data_val = data_val.drop(columns=['Unnamed: 0'])
+
+#Normalizo los dataframes
+scaler = StandardScaler()
+data_train[data_train.columns[:-1]] = scaler.fit_transform(data_train[data_train.columns[:-1]])
+data_test[data_train.columns[:-1]] = scaler.transform(data_test[data_test.columns])
 
 KNN_model = train_KNN( data_train )
 
@@ -112,7 +121,7 @@ with open('../KNN.txt', 'w') as f:
         if item == 1:
             f.write(f"Sith\n")
 
-accuracy, k_values = iterative_accuracy(data_training, data_val)
+accuracy, k_values = iterative_accuracy( data_train, data_test )
 k_accuracy_chart(accuracy, k_values)
 
 plt.tight_layout()

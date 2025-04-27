@@ -81,8 +81,8 @@ def confusion_matrix_chart( matrix ):
     sns.heatmap(matrix, annot=True, fmt="d", cmap="viridis"
     , xticklabels=[0, 1], yticklabels=[0, 1])
 
-truth = get_1D_data(sys.argv[1])
-predict = get_1D_data(sys.argv[2])
+truth = get_1D_data(sys.argv[2])
+predict = get_1D_data(sys.argv[1])
 
 matrix = get_matrix( truth, predict )
 print_matrix ( matrix )

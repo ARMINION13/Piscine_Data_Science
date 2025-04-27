@@ -68,7 +68,7 @@ def Democracy( p_1, p_2, p_3 ):
 
     final_predictions = []
 
-    for p in range(0, (len(p_1) - 1)):
+    for p in range(0, (len(p_1))):
 
         vote = 0
 
